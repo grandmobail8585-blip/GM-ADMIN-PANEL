@@ -19,13 +19,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Extract project
+        run: |
+          mkdir extracted
+          unzip "*.zip" -d extracted
+
       - name: Build Android project
         run: |
-          cd GMAdminPanel
-          gradle assembleDebug
+          PROJECT_DIR=$(find extracted -name settings.gradle.kts -printf '%h\n' | head -n 1)
+          echo "Project: $PROJECT_DIR"
+          gradle -p "$PROJECT_DIR" assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: GM-ADMIN-PANEL-APK
-          path: GMAdminPanel/app/build/outputs/apk/debug/*.apk
+          path: extracted/**/app/build/outputs/apk/debug/*.apk
